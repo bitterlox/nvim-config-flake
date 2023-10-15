@@ -1,5 +1,5 @@
 { pkgs }: let
-  inherit (pkgs) gopls lua-language-server rust-analyzer efm-langserver nil shellharden yamllint stylua;
+  inherit (pkgs) gopls lua-language-server rust-analyzer efm-langserver nil shellharden yamllint stylua nixfmt;
   inherit (pkgs.nodePackages) bash-language-server typescript-language-server jsonlint markdownlint-cli;
 in pkgs.writeText "env.lua" ''
 vim.g.env = {
@@ -18,6 +18,9 @@ vim.g.env = {
     stylua = "${stylua}/bin/stylua",
     jsonlint = "${jsonlint}/bin/jsonlint",
     markdownlint = "${markdownlint-cli}/bin/markdownlint",
+  },
+  tools = {
+    nixfmt = "${nixfmt}/bin/nixfmt"
   }
 }
 ''
