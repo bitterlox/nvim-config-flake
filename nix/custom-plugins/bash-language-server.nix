@@ -1,4 +1,5 @@
-{ pkgs }: let
+{ pkgs }:
+let
   bashls = pkgs.nodePackages.bash-language-server;
   shellcheck = pkgs.shellcheck;
 in pkgs.stdenv.mkDerivation {
@@ -11,5 +12,5 @@ in pkgs.stdenv.mkDerivation {
     makeWrapper $src/bin/bash-language-server \
       $out/bin/bash-language-server \
       --prefix PATH ":" "${shellcheck}/bin"
- '';
- }
+  '';
+}

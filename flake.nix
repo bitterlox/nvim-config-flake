@@ -1,17 +1,13 @@
 {
   description = "my neovim flake";
   inputs = {
-    nixpkgs = {
-      url = "github:NixOS/nixpkgs/nixos-unstable";
-    };
-#    neovim = {
-#      url = "github:neovim/neovim/stable?dir=contrib";
-#      inputs.nixpkgs.follows = "nixpkgs";
-#    };
+    nixpkgs = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
+    #    neovim = {
+    #      url = "github:neovim/neovim/stable?dir=contrib";
+    #      inputs.nixpkgs.follows = "nixpkgs";
+    #    };
 
-    flake-utils = {
-      url = "github:numtide/flake-utils";
-    };
+    flake-utils = { url = "github:numtide/flake-utils"; };
     efmls-configs = {
       url = "github:creativenull/efmls-configs-nvim";
       flake = false;
@@ -36,52 +32,51 @@
       url = "github:savq/melange-nvim";
       flake = false;
     };
-    
-
   };
-  outputs = { self, nixpkgs, flake-utils, efmls-configs, ... }@inputs: let
-    systems = with flake-utils.lib.system; [ aarch64-darwin x86_64-linux ];
+  outputs = { self, nixpkgs, flake-utils, efmls-configs, ... }@inputs:
+    let systems = with flake-utils.lib.system; [ aarch64-darwin x86_64-linux ];
 
-
-    in flake-utils.lib.eachSystem systems (system: 
+    in flake-utils.lib.eachSystem systems (system:
       let
-#        overlayNvim = prev: final: {
-#          neovim-unwrapped = neovim.packages.${system}.neovim;
-#        };
+        #        overlayNvim = prev: final: {
+        #          neovim-unwrapped = neovim.packages.${system}.neovim;
+        #        };
 
-         overlayVimPlugins = prev: final: final.lib.recursiveUpdate
-           final
-           { vimPlugins = {
+        overlayVimPlugins = prev: final:
+          final.lib.recursiveUpdate final {
+            vimPlugins = {
               customPlugins = {
-               efmls-configs = import ./nix/custom-plugins/efmls-configs.nix {
-                 pkgs = final;
-                 src = efmls-configs;
-               };
-             };
-             customThemes = import ./nix/custom-plugins/themes.nix {
-                inherit pkgs;
-                srcs = { inherit (inputs) sonokai adwaita citruszest caret melange; };
+                efmls-configs = import ./nix/custom-plugins/efmls-configs.nix {
+                  pkgs = final;
+                  src = efmls-configs;
+                };
               };
-             };
-             nodePackages = {
-               bash-language-server = import ./nix/custom-plugins/bash-language-server.nix {
-                 pkgs = final;
-               };
-             };
-           };
-
-        pkgs = import nixpkgs { inherit system; overlays = [ overlayVimPlugins ]; };
-        customized-nvim = import ./nix/custom-nvim.nix {
-          inherit pkgs;
-        };
-      in
-        { 
-          packages.default = customized-nvim;
-          apps.default = let
-            in {
-              type = "app";
-              program = "${customized-nvim}/bin/nvim";
+              customThemes = import ./nix/custom-plugins/themes.nix {
+                inherit pkgs;
+                srcs = {
+                  inherit (inputs) sonokai adwaita citruszest caret melange;
+                };
+              };
             };
-        }
-    );
+            nodePackages = {
+              bash-language-server =
+                import ./nix/custom-plugins/bash-language-server.nix {
+                  pkgs = final;
+                };
+            };
+          };
+
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ overlayVimPlugins ];
+        };
+        customized-nvim = import ./nix/custom-nvim.nix { inherit pkgs; };
+      in {
+        packages.default = customized-nvim;
+        apps.default = let
+        in {
+          type = "app";
+          program = "${customized-nvim}/bin/nvim";
+        };
+      });
 }

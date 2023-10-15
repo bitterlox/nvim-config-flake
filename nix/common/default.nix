@@ -1,28 +1,35 @@
-{ pkgs }: let lib = pkgs.lib; in rec {
+{ pkgs }:
+let lib = pkgs.lib;
+in rec {
   dirs = {
     config = import ./config-dir.nix { inherit pkgs; };
     global = import ./globals-dir.nix { inherit pkgs; };
   };
   config = let
-      getLuaFileNames = dir:
-        (builtins.map lua.stripExtension (lua.findFilesInDir dir));
-      # dir::String -> []::String
-      # returns a list of paths
-      buildConfigPaths = dir: builtins.attrValues (makeConfigFileSet dir);
-      # config-dir::String -> { (filename)::String = (filepath)::String }
-      makeConfigFileSet = config-dir: let
-        mapFiltered = file: { name = file; value = "${config-dir}/${file}.lua"; };
-        listOfSets = builtins.map mapFiltered ( getLuaFileNames config-dir );
+    getLuaFileNames = dir:
+      (builtins.map lua.stripExtension (lua.findFilesInDir dir));
+    # dir::String -> []::String
+    # returns a list of paths
+    buildConfigPaths = dir: builtins.attrValues (makeConfigFileSet dir);
+    # config-dir::String -> { (filename)::String = (filepath)::String }
+    makeConfigFileSet = config-dir:
+      let
+        mapFiltered = file: {
+          name = file;
+          value = "${config-dir}/${file}.lua";
+        };
+        listOfSets = builtins.map mapFiltered (getLuaFileNames config-dir);
       in builtins.listToAttrs listOfSets;
-    in {
-      editor-config = buildConfigPaths "${dirs.config}/editor-config";
-      plugins = {
-        extra-config = buildConfigPaths "${dirs.config}/plugins/extra-config";
-        config = makeConfigFileSet "${dirs.config}/plugins/plugin-config";
-        keybindings = makeConfigFileSet "${dirs.config}/plugins/plugin-keybindings";
-      };
-      globals = buildConfigPaths "${dirs.global}";
-   };
+  in {
+    editor-config = buildConfigPaths "${dirs.config}/editor-config";
+    plugins = {
+      extra-config = buildConfigPaths "${dirs.config}/plugins/extra-config";
+      config = makeConfigFileSet "${dirs.config}/plugins/plugin-config";
+      keybindings =
+        makeConfigFileSet "${dirs.config}/plugins/plugin-keybindings";
+    };
+    globals = buildConfigPaths "${dirs.global}";
+  };
   lua = {
     # fileName::String -> bool
     # return true is filename has `.lua` suffix

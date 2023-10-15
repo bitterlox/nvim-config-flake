@@ -1,4 +1,5 @@
-{ pkgs, src }: pkgs.vimUtils.buildVimPlugin {
-    name = "efmls-configs-nvim";
-    inherit src;
-  }
+{ pkgs, src }:
+pkgs.vimUtils.buildVimPlugin {
+  name = "efmls-configs-nvim";
+  inherit src;
+}
