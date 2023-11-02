@@ -37,10 +37,20 @@ let
   rc = builtins.concatStringsSep "\n"
     (builtins.map (path: "luafile ${path}") lua-files);
   #rc = builtins.trace rctmp rctmp;
-in pkgs.wrapNeovim pkgs.neovim-unwrapped {
-  configure = {
-    # here will come your custom configuration
-    customRC = rc;
-    packages = { all.start = plugin-packages; };
+  wrapped = pkgs.wrapNeovim pkgs.neovim-unwrapped {
+    configure = {
+      # here will come your custom configuration
+      customRC = rc;
+      packages = { all.start = plugin-packages; };
+    };
   };
+in pkgs.stdenv.mkDerivation { # add stuff to its paths
+  name = "wrapped-nvim";
+  src = wrapped;
+  nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
+  installPhase = ''
+    makeWrapper $src/bin/nvim \
+      $out/bin/nvim \
+      --prefix PATH ":" "${pkgs.ripgrep}/bin"
+  '';
 }
