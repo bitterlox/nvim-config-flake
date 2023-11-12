@@ -2,6 +2,7 @@
 # ( we need package names to load configfiles )
 # this being a set means the order in which plugin configs are later loaded is
 # not guaranteed
+# ^ to solve this i can make it a list of key-value pairs
 { pkgs }:
 {
   inherit (pkgs.vimPlugins) nvim-lspconfig;

@@ -11,6 +11,7 @@
       url = "github:creativenull/efmls-configs-nvim";
       flake = false;
     };
+    # themes i like: melange, adwaita, caret, sonokai is sort of like melange
     sonokai = {
       url = "github:sainnhe/sonokai";
       flake = false;
@@ -34,39 +35,11 @@
   };
   outputs = { flake-parts, ... }@inputs:
     flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [ ./nix ];
       perSystem = { inputs', system, pkgs, ... }:
-        let
-          overlayVimPlugins = prev: final:
-            final.lib.recursiveUpdate final {
-              vimPlugins = {
-                customPlugins = {
-                  efmls-configs =
-                    import ./nix/custom-plugins/efmls-configs.nix {
-                      pkgs = final;
-                      src = inputs.efmls-configs;
-                    };
-                };
-                customThemes = import ./nix/custom-plugins/themes.nix {
-                  inherit pkgs;
-                  srcs = {
-                    inherit (inputs) sonokai adwaita citruszest caret melange;
-                  };
-                };
-              };
-              nodePackages = {
-                bash-language-server =
-                  import ./nix/custom-plugins/bash-language-server.nix {
-                    pkgs = final;
-                  };
-              };
-            };
-          customized-nvim = import ./nix/custom-nvim.nix { inherit pkgs; };
+        let customized-nvim = import ./nix/custom-nvim.nix { inherit pkgs; };
         in {
           config = {
-            _module.args.pkgs = import inputs.nixpkgs {
-              inherit system;
-              overlays = [ overlayVimPlugins ];
-            };
             packages.default = customized-nvim;
             apps.default = {
               type = "app";
