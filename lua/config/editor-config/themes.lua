@@ -130,8 +130,6 @@ vim.api.nvim_create_user_command("SwitchTheme", function()
     themeIdx = 1
   end
   selectTheme(themeIdx)
-  local theme = pickTheme(themeIdx)
-  print("selected theme", theme)
 end, {})
 
 vim.api.nvim_create_user_command("GetTheme", function()
