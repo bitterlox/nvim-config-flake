@@ -33,7 +33,7 @@ addtheme(darkcolorfuns, "citruszest", function()
   local color = color or "citruszest"
   vim.cmd.colorscheme(color)
 end)
- 
+
 addtheme(darkcolorfuns, "caret", function()
   local color = color or "caret"
   vim.cmd.colorscheme(color)
@@ -66,7 +66,7 @@ end)
 --   local color = color or "dayfox"
 --   vim.cmd.colorscheme(color)
 -- end)
--- 
+--
 -- addtheme(lightcolorfuns, function()
 --   local color = color or "dawnfox"
 --   vim.cmd.colorscheme(color)
@@ -75,7 +75,6 @@ end)
 local datetable = os.date("*t")
 local isnighttime = datetable.hour > 20
 
-local themeIdx = 0
 
 -- if isnighttime then
 --   local idx = require("math").fmod(tonumber(datetable.day), #darkcolorfuns) + 1
@@ -84,9 +83,13 @@ local themeIdx = 0
 --   local idx = require("math").fmod(tonumber(datetable.day), #lightcolorfuns) + 1
 --   todaystheme = lightcolorfuns[idx]
 -- end
-local themeCount = #vim.tbl_keys(darkcolorfuns)
-local num = math.floor(tonumber(datetable.yday) / 52)
-themeIdx = require("math").fmod(num, themeCount) + 1
+
+local function getThemeIndex(themeCount, yday)
+  return require("math").fmod(
+    math.floor(yday / 7),
+    themeCount
+  ) + 1
+end
 
 vim.cmd("set termguicolors")
 
@@ -99,11 +102,25 @@ local pickTheme = function(idx)
   return themeName
 end
 
+-- for i = 1, 365, 1 do
+--   local tidx = getThemeIndex(
+--     #vim.tbl_keys(darkcolorfuns),
+--     i
+--   )
+--   print(i, pickTheme(tidx))
+-- end
+
 local selectTheme = function(idx)
   local theme = pickTheme(idx)
   darkcolorfuns[theme]()
   print("selected theme", theme)
 end
+
+local themeCount = #vim.tbl_keys(darkcolorfuns)
+local themeIdx = getThemeIndex(
+  themeCount,
+  tonumber(datetable.yday)
+)
 
 selectTheme(themeIdx)
 
