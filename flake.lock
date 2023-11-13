@@ -1,6 +1,6 @@
 {
   "nodes": {
-    "adwaita": {
+    "adwaita-theme": {
       "flake": false,
       "locked": {
         "lastModified": 1687400838,
@@ -16,7 +16,7 @@
         "type": "github"
       }
     },
-    "caret": {
+    "caret-theme": {
       "flake": false,
       "locked": {
         "lastModified": 1695010954,
@@ -32,14 +32,14 @@
         "type": "github"
       }
     },
-    "citruszest": {
+    "citruszest-theme": {
       "flake": false,
       "locked": {
-        "lastModified": 1697248440,
-        "narHash": "sha256-ecb2Kus92W0gRMq6CDrMVwJNMtoCetz+nZDU4C1rCb4=",
+        "lastModified": 1699809559,
+        "narHash": "sha256-uEFBhCcH1XuSYUYs+nua9TNFlNcfchvel7lb5YpBaD0=",
         "owner": "zootedb0t",
         "repo": "citruszest.nvim",
-        "rev": "ea10ee201431664c6d92634d179a690463f3caf5",
+        "rev": "30cbab822fec23ed38781c3c94d866cfa7fbb9a1",
         "type": "github"
       },
       "original": {
@@ -82,14 +82,14 @@
         "type": "github"
       }
     },
-    "melange": {
+    "melange-theme": {
       "flake": false,
       "locked": {
-        "lastModified": 1691793679,
-        "narHash": "sha256-67Ldkr7Uo0vV/ouLxH5KMXnZT7Hjuh4WXHxOLkJdBmY=",
+        "lastModified": 1698069480,
+        "narHash": "sha256-JBPuOODMw/XZsiP6aLrDy8Wj7wp9E2SaM1mW7iZhlIA=",
         "owner": "savq",
         "repo": "melange-nvim",
-        "rev": "517518347e41301bb2d1189d257f3918551a2ea5",
+        "rev": "ca3444c8e5002ee5ab6f077660317f869c7b6a36",
         "type": "github"
       },
       "original": {
@@ -134,24 +134,24 @@
     },
     "root": {
       "inputs": {
-        "adwaita": "adwaita",
-        "caret": "caret",
-        "citruszest": "citruszest",
+        "adwaita-theme": "adwaita-theme",
+        "caret-theme": "caret-theme",
+        "citruszest-theme": "citruszest-theme",
         "efmls-configs": "efmls-configs",
         "flake-parts": "flake-parts",
-        "melange": "melange",
+        "melange-theme": "melange-theme",
         "nixpkgs": "nixpkgs",
-        "sonokai": "sonokai"
+        "sonokai-theme": "sonokai-theme"
       }
     },
-    "sonokai": {
+    "sonokai-theme": {
       "flake": false,
       "locked": {
-        "lastModified": 1691437922,
-        "narHash": "sha256-eeQemBfw/BsoXfJ6Ftos5cYOtVOfGMGqrbHKHgb7Df8=",
+        "lastModified": 1698164195,
+        "narHash": "sha256-L/aPZ2CiJARxzlBoFTQ2gRWtDaSlPN7B2w8zNtLYeSU=",
         "owner": "sainnhe",
         "repo": "sonokai",
-        "rev": "17308ee6d9c764bfc1e0fa97213e7a99701b4144",
+        "rev": "bdce098fc9e7202d3c555e2dc98c755ca1c23835",
         "type": "github"
       },
       "original": {

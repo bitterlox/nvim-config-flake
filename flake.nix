@@ -12,23 +12,23 @@
       flake = false;
     };
     # themes i like: melange, adwaita, caret, sonokai is sort of like melange
-    sonokai = {
+    sonokai-theme = {
       url = "github:sainnhe/sonokai";
       flake = false;
     };
-    adwaita = {
+    adwaita-theme = {
       url = "github:Mofiqul/adwaita.nvim";
       flake = false;
     };
-    citruszest = {
+    citruszest-theme = {
       url = "github:zootedb0t/citruszest.nvim";
       flake = false;
     };
-    caret = {
+    caret-theme = {
       url = "github:projekt0n/caret.nvim";
       flake = false;
     };
-    melange = {
+    melange-theme = {
       url = "github:savq/melange-nvim";
       flake = false;
     };

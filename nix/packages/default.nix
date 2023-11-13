@@ -1,5 +1,19 @@
 # this is a flake-parts module
-{ inputs, ... }: {
+{ inputs, lib, ... }:
+let
+  buildThemePackages = pkgs:
+    let
+      suffix = "-theme";
+      hasSuffix = (a: _: lib.strings.hasSuffix suffix a);
+      buildPlugin = name: src:
+        pkgs.vimUtils.buildVimPlugin { inherit name src; };
+      removeSuffix = attrName: (lib.strings.removeSuffix suffix attrName);
+      filtered = lib.attrsets.filterAttrs hasSuffix inputs;
+    in lib.attrsets.mapAttrs' (n: v:
+      let newAttrName = (removeSuffix n);
+      in lib.attrsets.nameValuePair newAttrName (buildPlugin newAttrName v))
+    filtered;
+in {
   perSystem = { inputs', system, pkgs, ... }:
     let
       overlayVimPlugins = prev: final:
@@ -10,12 +24,7 @@
               src = inputs.efmls-configs;
             };
           };
-          vimPlugins.customThemes = import ./themes.nix {
-            inherit pkgs;
-            srcs = {
-              inherit (inputs) sonokai adwaita citruszest caret melange;
-            };
-          };
+          vimPlugins.customThemes = buildThemePackages pkgs;
           nodePackages.bash-language-server =
             import ./bash-language-server.nix { pkgs = final; };
         };
