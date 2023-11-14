@@ -44,6 +44,19 @@ let
       packages = { all.start = plugin-packages; };
     };
   };
+  toolPaths = let
+    packages = {
+      # lsps
+      inherit (pkgs)
+        gopls lua-language-server rust-analyzer efm-langserver nil shellharden
+        yamllint stylua nixfmt;
+      inherit (pkgs.nodePackages)
+        bash-language-server typescript-language-server jsonlint
+        markdownlint-cli;
+      # tools
+      inherit (pkgs) ripgrep;
+    };
+  in pkgs.lib.makeBinPath (builtins.attrValues packages);
 in pkgs.stdenv.mkDerivation { # add stuff to its paths
   name = "wrapped-nvim";
   src = wrapped;
@@ -51,6 +64,6 @@ in pkgs.stdenv.mkDerivation { # add stuff to its paths
   installPhase = ''
     makeWrapper $src/bin/nvim \
       $out/bin/nvim \
-      --prefix PATH ":" "${pkgs.ripgrep}/bin"
+      --prefix PATH ":" ${toolPaths}
   '';
 }

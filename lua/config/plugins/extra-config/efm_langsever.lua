@@ -1,6 +1,5 @@
 local lspconfig = require("lspconfig")
 
-local env = vim.g.env
 local capabilities = vim.g.helpers.lsp.make_capabilities(require("cmp_nvim_lsp"))
 local make_on_attach_callback = vim.g.helpers.lsp.make_on_attach_callback(
   require("lsp-inlayhints"),
@@ -18,7 +17,7 @@ local languages = {
   json = {
     {
       prefix = "jsonlint",
-      lintCommand = env.efm_tools_paths.jsonlint .. " -c",
+      lintCommand = "jsonlint -c",
       lintStdin = true,
       lintFormats = { 'line %l, col %c, found: %m' },
     }
@@ -26,7 +25,7 @@ local languages = {
   yaml = {
     {
       prefix = "yamllint",
-      lintCommand = env.efm_tools_paths.yamllint .. " -s -f parsable ${INPUT}",
+      lintCommand = "yamllint -s -f parsable ${INPUT}",
       lintStdin = true,
       -- this is vim error format https://vimhelp.org/quickfix.txt.html#error-file-format
       -- tested with https://github.com/reviewdog/errorformat (which is used in efm-langserver)
@@ -35,7 +34,7 @@ local languages = {
   },
   sh = {
     {
-      formatCommand = env.efm_tools_paths.shellharden .. " --transform ${INPUT}",
+      formatCommand = "shellharden --transform ${INPUT}",
       formatStdin = false,
     },
     require('efmls-configs.formatters.shfmt'),
@@ -43,7 +42,7 @@ local languages = {
   markdown = {
     {
       prefix = "markdownlint",
-      lintCommand = env.efm_tools_paths.markdownlint .. " parsable ${INPUT}",
+      lintCommand = "markdownlint parsable ${INPUT}",
       lintStdin = true,
       -- this is vim error format https://vimhelp.org/quickfix.txt.html#error-file-format
       -- tested with https://github.com/reviewdog/errorformat (which is used in efm-langserver)
@@ -52,14 +51,14 @@ local languages = {
   },
   lua = {
     {
-      formatCommand = env.efm_tools_paths.stylua .. "-c --color never --output-format unified ${INPUT}",
+      formatCommand = "stylua-c --color never --output-format unified ${INPUT}",
       formatStdin = false,
     },
   },
 }
 
 lspconfig["efm"].setup {
-  cmd = { env.lsp_paths.efm_langserver },
+  cmd = { "efm-langserver" },
   capabilities = capabilities,
   on_attach = make_on_attach_callback(),
   filetypes = vim.tbl_keys(languages),

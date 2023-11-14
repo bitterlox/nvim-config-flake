@@ -1,7 +1,6 @@
 local lspconfig = require("lspconfig")
 local util = require("lspconfig.util")
 
-local env = vim.g.env
 local capabilities = vim.g.helpers.lsp.make_capabilities(require("cmp_nvim_lsp"))
 local make_on_attach_callback = vim.g.helpers.lsp.make_on_attach_callback(
   require("lsp-inlayhints"),
@@ -12,14 +11,14 @@ local make_on_attach_callback = vim.g.helpers.lsp.make_on_attach_callback(
 lspconfig["nil_ls"].setup {
   capabilities        = capabilities,
   on_attach           = make_on_attach_callback(),
-  cmd                 = { env.lsp_paths["nil"] },
+  cmd                 = { "nil" },
   filetypes           = { "nix" },
   root_dir            = util.root_pattern(".nixd.json", "flake.nix", ".git"),
   single_file_support = true,
-  settings              = {
+  settings            = {
     ["nil"] = {
       formatting = {
-        command = { env.tools.nixfmt }
+        command = { "nixfmt" }
       }
     }
   }
