@@ -2,8 +2,8 @@
 let lib = pkgs.lib;
 in rec {
   dirs = {
-    config = import ./config-dir.nix { inherit pkgs; };
-    global = import ./globals-dir.nix { inherit pkgs; };
+    config = ../../lua/config;
+    global = ../../lua/globals;
   };
   config = let
     getLuaFileNames = dir:
