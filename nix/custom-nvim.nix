@@ -54,7 +54,7 @@ let
         bash-language-server typescript-language-server jsonlint
         markdownlint-cli;
       # tools
-      inherit (pkgs) ripgrep;
+      inherit (pkgs) ripgrep fd;
     };
   in pkgs.lib.makeBinPath (builtins.attrValues packages);
 in pkgs.stdenv.mkDerivation { # add stuff to its paths
