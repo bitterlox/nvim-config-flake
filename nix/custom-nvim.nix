@@ -1,4 +1,4 @@
-{ pkgs }:
+{ pkgs, includeInPath }:
 let
   config-utils = (import ./common { inherit pkgs; }).config;
 
@@ -44,19 +44,7 @@ let
       packages = { all.start = plugin-packages; };
     };
   };
-  toolPaths = let
-    packages = {
-      # lsps
-      inherit (pkgs)
-        gopls lua-language-server rust-analyzer efm-langserver nil shellharden
-        yamllint stylua nixfmt;
-      inherit (pkgs.nodePackages)
-        bash-language-server typescript-language-server jsonlint
-        markdownlint-cli;
-      # tools
-      inherit (pkgs) ripgrep fd;
-    };
-  in pkgs.lib.makeBinPath (builtins.attrValues packages);
+  toolPaths = pkgs.lib.makeBinPath includeInPath;
 in pkgs.stdenv.mkDerivation { # add stuff to its paths
   name = "wrapped-nvim";
   src = wrapped;

@@ -36,17 +36,5 @@
   outputs = { flake-parts, ... }@inputs:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [ ./nix ];
-      perSystem = { inputs', system, pkgs, ... }:
-        let customized-nvim = import ./nix/custom-nvim.nix { inherit pkgs; };
-        in {
-          config = {
-            packages.default = customized-nvim;
-            apps.default = {
-              type = "app";
-              program = "${customized-nvim}/bin/nvim";
-            };
-          };
-        };
-      systems = [ "aarch64-darwin" "x86_64-linux" ];
     };
 }
