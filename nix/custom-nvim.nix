@@ -1,11 +1,11 @@
-{ pkgs, includeInPath }:
+{ pkgs, includeInPath, plugins }:
 let
   config-utils = (import ./common { inherit pkgs; }).config;
 
-  plugins = import ./plugins.nix { inherit pkgs; };
-
-  plugin-names = builtins.attrNames plugins;
-  plugin-packages = builtins.attrValues plugins;
+  plugin-names =
+    builtins.map (pluginSet: builtins.getAttr "name" pluginSet) plugins;
+  plugin-packages =
+    builtins.map (pluginSet: builtins.getAttr "package" pluginSet) plugins;
 
   plugin-config = config-utils.plugins.config;
   plugin-keybindings = config-utils.plugins.keybindings;
@@ -37,21 +37,20 @@ let
   rc = builtins.concatStringsSep "\n"
     (builtins.map (path: "luafile ${path}") lua-files);
   #rc = builtins.trace rctmp rctmp;
-  wrapped = pkgs.wrapNeovim pkgs.neovim-unwrapped {
-    configure = {
-      # here will come your custom configuration
-      customRC = rc;
-      packages = { all.start = plugin-packages; };
-    };
-  };
-  toolPaths = pkgs.lib.makeBinPath includeInPath;
 in pkgs.stdenv.mkDerivation { # add stuff to its paths
   name = "wrapped-nvim";
-  src = wrapped;
+  src = with pkgs;
+    wrapNeovim neovim-unwrapped {
+      configure = {
+        # here will come your custom configuration
+        customRC = rc;
+        packages = { all.start = plugin-packages; };
+      };
+    };
   nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
   installPhase = ''
     makeWrapper $src/bin/nvim \
       $out/bin/nvim \
-      --prefix PATH ":" ${toolPaths}
+      --prefix PATH ":" ${pkgs.lib.makeBinPath includeInPath}
   '';
 }
