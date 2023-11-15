@@ -26,8 +26,7 @@
         packages.default = customized-nvim;
         apps.default = {
           type = "app";
-          program = lib.debug.traceSeqN 1 config.neovim.plugins
-            "${customized-nvim}/bin/nvim";
+          program = "${customized-nvim}/bin/nvim";
         };
       };
     };
