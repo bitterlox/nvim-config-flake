@@ -5,9 +5,9 @@ let
   plugin-packages =
     builtins.map (pluginSet: builtins.getAttr "package" pluginSet) plugins;
 
-  checkPathsToLua = ptl:
-    builtins.mapAttrs (attr: val:
-      pkgs.lib.throwIf (val == ./.) "option ${attr} is not defined" val) ptl;
+  validatedPathsToLua = builtins.mapAttrs (attr: val:
+    pkgs.lib.throwIf (val == ./.) "option ${attr} is not defined" val)
+    pathsToLua;
 
   getLuaFileNames = dir:
     let
@@ -70,7 +70,7 @@ let
   };
 
   configs = builtins.mapAttrs
-    (attr: val: val (builtins.getAttr attr (checkPathsToLua pathsToLua)))
+    (attr: val: val (builtins.getAttr attr validatedPathsToLua))
     transformConfigPaths;
 
   lua-files = builtins.concatLists [
