@@ -3,8 +3,7 @@
     let
       customized-nvim = import ../custom-nvim.nix {
         inherit pkgs;
-        inherit (config.neovim) includeInPath;
-        inherit (config.neovim) plugins;
+        inherit (config.neovim) includeInPath plugins pathsToLua;
       };
       # option definition expects plugins in this shape
       # { name::String, package::Derivation }
@@ -23,6 +22,13 @@
           inherit (pkgs) ripgrep fd;
         };
         neovim.plugins = plugins;
+        neovim.pathsToLua = {
+          editorConfig = ../../lua/config/editor-config;
+          globals = ../../lua/globals;
+          pluginConfig = ../../lua/config/plugins/plugin-config;
+          pluginKeyBindings = ../../lua/config/plugins/plugin-keybindings;
+          pluginExtraConfig = ../../lua/config/plugins/extra-config;
+        };
         packages.default = customized-nvim;
         apps.default = {
           type = "app";

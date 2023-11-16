@@ -1,37 +1,84 @@
-{ pkgs, includeInPath, plugins }:
+{ pkgs, includeInPath, plugins, pathsToLua }:
 let
-  config-utils = (import ./common { inherit pkgs; }).config;
-
   plugin-names =
     builtins.map (pluginSet: builtins.getAttr "name" pluginSet) plugins;
   plugin-packages =
     builtins.map (pluginSet: builtins.getAttr "package" pluginSet) plugins;
 
-  plugin-config = config-utils.plugins.config;
-  plugin-keybindings = config-utils.plugins.keybindings;
+  checkPathsToLua = ptl:
+    builtins.mapAttrs (attr: val:
+      pkgs.lib.throwIf (val == ./.) "option ${attr} is not defined" val) ptl;
 
+  getLuaFileNames = dir:
+    let
+      # fileName::String -> bool
+      # return true is filename has `.lua` suffix
+      isLuaFile = (filename: pkgs.lib.strings.hasSuffix ".lua" filename);
+      # fileName::String -> String
+      # removes ".lua" from fileName 
+      stripExtension =
+        (filename: pkgs.lib.strings.removeSuffix ".lua" filename);
+      # dir::Path|String -> []::String
+      # returns all lua files found at path `dir`
+      findFilesInDir = dir:
+        let filenames = (builtins.attrNames (builtins.readDir dir));
+        in builtins.filter isLuaFile filenames;
+    in (builtins.map stripExtension (findFilesInDir dir));
+
+  buildConfigPaths = dir: builtins.attrValues (makeConfigFileSet dir);
+  # config-dir::String -> { (filename)::String = (filepath)::String }
+  makeConfigFileSet = dir:
+    let
+      mapFiltered = file: {
+        name = file;
+        value = "${dir}/${file}.lua";
+      };
+      listOfSets = builtins.map mapFiltered (getLuaFileNames dir);
+    in builtins.listToAttrs listOfSets;
+
+  # matches config files to plugins, maintaing the order of
+  # plugins in the plugin list and spitting out warning for unused plugin files
   matchConfigFiles = configAttrSet: warnMsg:
-    builtins.filter (e: e != null) (builtins.map (file-name:
-      let file-path = (builtins.getAttr file-name configAttrSet);
-      in if (builtins.elem file-name plugin-names) then
-        file-path
-      else
-        pkgs.lib.trivial.warn "${warnMsg} ${file-path}" null)
-      (builtins.attrNames configAttrSet));
+    let
+      matched = builtins.listToAttrs (builtins.filter (e: e != null)
+        (builtins.map (file-name:
+          let file-path = (builtins.getAttr file-name configAttrSet);
+          in if (builtins.elem file-name plugin-names) then
+            pkgs.lib.nameValuePair file-name file-path
+          else
+            pkgs.lib.trivial.warn "${warnMsg} (${file-name}.lua)" null)
+          (builtins.attrNames configAttrSet)));
+      attrNames = builtins.attrNames matched;
+      sorted = builtins.sort (a: b:
+        let
+          eq = elem: (e: e == elem);
+          aIdx = pkgs.lib.lists.findFirstIndex (eq a) null plugin-names;
+          bIdx = pkgs.lib.lists.findFirstIndex (eq b) null plugin-names;
+        in aIdx < bIdx) attrNames;
+    in builtins.map (e: builtins.getAttr e matched) sorted;
 
-  matched-config = matchConfigFiles plugin-config "unused plugin config";
-  matched-keybindings =
-    matchConfigFiles plugin-keybindings "unused plugin keybinding";
+  transformConfigPaths = {
+    editorConfig = buildConfigPaths;
+    globals = buildConfigPaths;
+    pluginConfig = dirPath:
+      matchConfigFiles (makeConfigFileSet dirPath)
+      "unmatched plugin config won't be loaded";
+    pluginKeyBindings = dirPath:
+      matchConfigFiles (makeConfigFileSet dirPath)
+      "unmatched plugin keybinding won't be loaded";
+    pluginExtraConfig = buildConfigPaths;
+  };
 
-  lua-files = let
-    #plugin-specific = pkgs.lib.lists.flatten pluginConfigAndKeybindingPaths;
-    extra-config = config-utils.plugins.extra-config;
-  in builtins.concatLists [
-    config-utils.editor-config
-    config-utils.globals
-    matched-config
-    matched-keybindings
-    extra-config
+  configs = builtins.mapAttrs
+    (attr: val: val (builtins.getAttr attr (checkPathsToLua pathsToLua)))
+    transformConfigPaths;
+
+  lua-files = builtins.concatLists [
+    configs.editorConfig
+    configs.globals
+    configs.pluginConfig
+    configs.pluginKeyBindings
+    configs.pluginExtraConfig
   ];
   # String | concatenated config files in the format vimrc expects
   rc = builtins.concatStringsSep "\n"
