@@ -51,11 +51,11 @@
     "efmls-configs": {
       "flake": false,
       "locked": {
-        "lastModified": 1696946703,
-        "narHash": "sha256-nbD/e3cvkP2FG16K7pYmqq2B3+B23bRjSvV3smxgfI8=",
+        "lastModified": 1699882665,
+        "narHash": "sha256-6bMZjrbH+cBo2S6mKOoonYPlc9CjH7+4ZR3i9f6Z1V4=",
         "owner": "creativenull",
         "repo": "efmls-configs-nvim",
-        "rev": "3fade5690e31f80b70eb5fc5a7fa7a8da6644fe9",
+        "rev": "9bc2196b24a38ebaa16fab25d63caa38565410f3",
         "type": "github"
       },
       "original": {
@@ -100,11 +100,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1697059129,
-        "narHash": "sha256-9NJcFF9CEYPvHJ5ckE8kvINvI84SZZ87PvqMbH6pro0=",
+        "lastModified": 1699963925,
+        "narHash": "sha256-LE7OV/SwkIBsCpAlIPiFhch/J+jBDGEZjNfdnzCnCrY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "5e4c2ada4fcd54b99d56d7bd62f384511a7e2593",
+        "rev": "bf744fe90419885eefced41b3e5ae442d732712d",
         "type": "github"
       },
       "original": {
