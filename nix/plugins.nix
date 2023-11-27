@@ -153,6 +153,7 @@ in [
       p.html
       p.css
       p.bash
+      p.scheme
     ]);
   }
   #"nvim-treesitter/playground"
