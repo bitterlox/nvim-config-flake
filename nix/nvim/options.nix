@@ -1,5 +1,21 @@
 { lib, ... }: {
   imports = [ ];
+# extend this option declaration like this
+# option.neovim.editors = [
+#  {
+#    name = "slim" # will be appended to `neovim-` to name the package
+#    includeInPath 
+#    plugins 
+#    pathsToLua 
+#  }
+#  {
+#    name = "full" # will be appended to `neovim-` to name the package
+#    includeInPath 
+#    plugins 
+#    pathsToLua 
+#  }
+# ]
+# then for each element we build an editor using our other flows
   config.perSystem = { pkgs, ... }: {
     options.neovim.includeInPath = lib.mkOption {
       type = with lib.types; listOf package;
