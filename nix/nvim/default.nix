@@ -11,7 +11,7 @@
       # 1. plugins specify path to a lua file (or files) to include
       #   we can do away with all that code to match lua file names to plugin names
       #   if this work then split the lua top level folder into two sub-folders
-      #   "autoloaded" "manual"
+      #   "autoloaded" "manual", remove "name" field from plugins
       # 2. make another nix file (in this dir) that normalizes the stuff we get from `config.neovim`
       #      should be pretty easy:
       #      - for plain lua config just grab all the lua files in the folder and call
@@ -22,7 +22,7 @@
       #    into a list of Configurations then we use the result of that to call package-custom-nvim
       customized-nvim = import ./custom-nvim.nix {
         inherit pkgs;
-        inherit (config.neovim) includeInPath plugins pathsToLua;
+        inherit (builtins.elemAt config.neovim.editors 0) includeInPath plugins pathsToLua;
       };
     in {
       config = {
