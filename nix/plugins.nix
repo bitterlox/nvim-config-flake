@@ -1,145 +1,155 @@
 pkgs:
 let
   customThemes = builtins.attrValues (builtins.mapAttrs (k: v: {
-    name = k;
+    kind = "plugin";
     package = v;
   }) pkgs.vimPlugins.customThemes);
 in [
   {
-    name = "nvim-lspconfig";
+    kind = "plugin";
     package = pkgs.vimPlugins.nvim-lspconfig;
   }
   {
-    name = "plenary-nvim";
+    kind = "plugin";
     package = pkgs.vimPlugins.plenary-nvim;
   }
 
   # inlay hints
   {
-    name = "lsp-inlayhints-nvim";
+    kind = "plugin";
     package = pkgs.vimPlugins.lsp-inlayhints-nvim;
+    luaFiles = [ ../lua/config/plugins/plugin-config/lsp-inlayhints-nvim.lua ];
   }
 
   # neovim for lsp
   {
-    name = "neodev-nvim";
+    kind = "plugin";
     package = pkgs.vimPlugins.neodev-nvim;
   }
 
   # test runner
   {
-    name = "neotest";
+    kind = "plugin";
     package = pkgs.vimPlugins.neotest;
+    luaFiles = [
+      ../lua/config/plugins/plugin-config/neotest.lua
+      ../lua/config/plugins/plugin-keybindings/neotest.lua
+    ];
   }
   {
-    name = "neotest-go";
+    kind = "plugin";
     package = pkgs.vimPlugins.neotest-go;
   }
   {
-    name = "neotest-jest";
+    kind = "plugin";
     package = pkgs.vimPlugins.neotest-jest;
   }
 
   # status line
   {
-    name = "nvim-cokeline";
+    kind = "plugin";
     package = pkgs.vimPlugins.nvim-cokeline;
+    luaFiles = [
+      ../lua/config/plugins/plugin-config/nvim-cokeline.lua
+      ../lua/config/plugins/plugin-keybindings/nvim-cokeline.lua
+    ];
   }
   {
-    name = "nvim-web-devicons";
+    kind = "plugin";
     package = pkgs.vimPlugins.nvim-web-devicons;
   }
 
-  # nvim-cmp
+  # completion
   {
-    name = "cmp-buffer";
+    kind = "plugin";
     package = pkgs.vimPlugins.cmp-buffer;
   }
   {
-    name = "cmp-path";
+    kind = "plugin";
     package = pkgs.vimPlugins.cmp-path;
   }
   {
-    name = "cmp-cmdline";
+    kind = "plugin";
     package = pkgs.vimPlugins.cmp-cmdline;
-  }
-  {
-    name = "nvim-cmp";
-    package = pkgs.vimPlugins.nvim-cmp;
   }
   # completion sources
   {
-    name = "cmp-nvim-lsp";
+    kind = "plugin";
     package = pkgs.vimPlugins.cmp-nvim-lsp;
   }
   #cmp-nvim-lua
   {
-    name = "cmp_luasnip";
+    kind = "plugin";
     package = pkgs.vimPlugins.cmp_luasnip;
+  }
+  {
+    kind = "plugin";
+    package = pkgs.vimPlugins.nvim-cmp;
+    luaFiles = [ ../lua/config/plugins/extra-config/autocompletion.lua ];
   }
   #cmp-pluginNames
   # snippets
   {
-    name = "luasnip";
+    kind = "plugin";
     package = pkgs.vimPlugins.luasnip;
   }
   {
-    name = "friendly-snippets";
+    kind = "plugin";
     package = pkgs.vimPlugins.friendly-snippets;
   }
 
   # telescope
   {
-    name = "telescope-nvim";
+    kind = "plugin";
     package = pkgs.vimPlugins.telescope-nvim;
+    luaFiles = [
+      ../lua/config/plugins/plugin-config/telescope-nvim.lua
+      ../lua/config/plugins/plugin-keybindings/telescope-nvim.lua
+    ];
   }
 
   # themes
   {
-    name = "rose-pine";
+    kind = "plugin";
     package = pkgs.vimPlugins.rose-pine;
   }
-  #minimal.nvim
-  #sonokai
-  #nightfox.nvim
-  #adwaita.nvim
-  #caret.nvim
-
   # tmux integration
   {
-    name = "tmux-nvim";
+    kind = "plugin";
     package = pkgs.vimPlugins.tmux-nvim;
+    luaFiles = [ ../lua/config/plugins/plugin-config/tmux-nvim.lua ];
   }
 
   # tpope vimPlugins
   # git client
   {
-    name = "vim-fugitive";
+    kind = "plugin";
     package = pkgs.vimPlugins.vim-fugitive;
+    luaFiles = [ ../lua/config/plugins/plugin-keybindings/vim-fugitive.lua ];
   }
-  # all about {name = "surroundings"; package = pkgs.vimPlugins.surroundings;}
+  # all about { name = "surroundings"; package = pkgs.vimPlugins.surroundings;}
   {
-    name = "vim-surround";
+    kind = "plugin";
     package = pkgs.vimPlugins.vim-surround;
   }
   # repeat commands
   {
-    name = "vim-repeat";
+    kind = "plugin";
     package = pkgs.vimPlugins.vim-repeat;
   }
   # improved netrw
   {
-    name = "vim-vinegar";
+    kind = "plugin";
     package = pkgs.vimPlugins.vim-vinegar;
   }
   # comment stuff
   {
-    name = "vim-commentary";
+    kind = "plugin";
     package = pkgs.vimPlugins.vim-commentary;
   }
   # treesitter + undotree
   {
-    name = "nvim-treesitter";
+    kind = "plugin";
     package = pkgs.vimPlugins.nvim-treesitter.withPlugins (p: [
       p.vimdoc
       p.vim
@@ -155,22 +165,24 @@ in [
       p.bash
       p.scheme
     ]);
+    luaFiles = [ ../lua/config/plugins/plugin-config/nvim-treesitter.lua ];
   }
   #"nvim-treesitter/playground"
   {
-    name = "undotree";
+    kind = "plugin";
     package = pkgs.vimPlugins.undotree;
+    luaFiles = [ ../lua/config/plugins/plugin-keybindings/undotree.lua ];
   }
 
   # visual star search
   {
-    name = "vim-visual-star-search";
+    kind = "plugin";
     package = pkgs.vimPlugins.vim-visual-star-search;
   }
 
   ### - custom plugins - ###
   {
-    name = "efmls-configs";
+    kind = "plugin";
     package = pkgs.vimPlugins.customPlugins.efmls-configs;
   }
 ] ++ customThemes
