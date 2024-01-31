@@ -4,7 +4,7 @@ let
   addon-type = types.submodule {
     options = {
       kind = types.enum [ "tool" "plugin" "config" ];
-      package = types.nullOr types.package;
+      package = types.listOf types.package;
       luaConfigs = types.listOf types.path;
     };
   };

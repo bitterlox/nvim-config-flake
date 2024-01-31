@@ -11,12 +11,13 @@
 # and not through the constructor
 lib:
 let
-  checkPkgOrPkgs = pkgOrPkgs:
+  # todo: pull out functionality under single fn
+  checkPkgOrPkgs = pkg:
     let
       doChecks = vals:
         lib.lists.foldl lib.trivial.and
         (builtins.map lib.attrsets.isDerivation vals) true;
-      pkgs = lib.lists.flatten [ pkgOrPkgs ];
+      pkgs = lib.lists.flatten [ pkg ];
     in if (doChecks pkgs) then
       pkgs
     else
@@ -34,36 +35,67 @@ let
     else
       lib.trivial.throwIf true
       "cfgs is not store path nor a list of store paths";
-in {
-  makeToolAddon = { pkgOrPkgs, cfgOrCfgs ? [ ] }:
+in rec {
+  makeToolAddon = { pkg, config ? [ ] }:
     let
-      pkgs = checkPkgOrPkgs pkgOrPkgs;
-      cfgs = checkCfgs cfgOrCfgs;
+      pkgs = checkPkgOrPkgs pkg;
+      cfgs = checkCfgs config;
     in {
       kind = "tool";
-      package = pkgs;
+      packages = pkgs;
       luaConfig = cfgs;
     };
-  makePluginAddon = { pkgOrPkgs, cfgOrCfgs ? [ ] }:
+  makePluginAddon = { pkg, config ? [ ] }:
     let
-      pkgs = checkPkgOrPkgs pkgOrPkgs;
-      cfgs = checkCfgs cfgOrCfgs;
+      pkgs = checkPkgOrPkgs pkg;
+      cfgs = checkCfgs config;
     in {
       kind = "plugin";
-      package = pkgs;
+      packages = pkgs;
       luaConfig = cfgs;
     };
-  makeLuaCfgAddon = { cfgOrCfgs }:
-    let cfgs = checkCfgs cfgOrCfgs;
+  makeLuaCfgAddon = { config }:
+    let cfgs = checkCfgs config;
     in {
       kind = "config";
-      package = null; # not sure if this fits in our system
+      packages = null; # not sure if this fits in our system
       # this should fail if something that's not a list is passed
       luaConfig = cfgs;
     };
-# TODO: make merge function, update constructors
-  getTool = { kind, package, ... }: if kind == "tool" then package else null;
-  getPlugin = { kind, package, ... }:
-    if kind == "plugin" then package else null;
-  getLuaCfg = { luaConfig, ... }: luaConfig;
+  # TODO: make merge function, update constructors
+  mergeAddons = addon1: addon2:
+    let
+      kind1 = (getAddonKind addon1);
+      kind2 = (getAddonKind addon2);
+      selectorSet = {
+        "tools" = getTools;
+        "plugins" = getPlugins;
+        "luaConfigs" = getLuaCfgs;
+      };
+      constructorsSet = {
+        "tools" = cfgs: pkgs:
+          makeToolAddon {
+            pkg = pkgs;
+            config = cfgs;
+          };
+        "plugins" = cfgs: pkgs:
+          makePluginAddon {
+            pkg = pkgs;
+            config = cfgs;
+          };
+        "luaConfigs" = cfgs: pkgs: makeLuaCfgAddon { config = cfgs; };
+      };
+    in if (kind1 == kind2) then
+      let
+        pkgs = builtins.map selectorSet.${kind1} [ kind1 kind2 ];
+        cfgs = builtins.map getLuaCfgs [ kind1 kind2 ];
+      in constructorsSet.${kind1} cfgs pkgs
+    else
+      lib.trivial.throwIf true "can't merge addons not of the same kind" { };
+  getAddonKind = { kind, ... }: kind;
+  getTools = addon@{ packages, ... }:
+    if (getAddonKind addon) == "tool" then packages else null;
+  getPlugins = addon@{ packages, ... }:
+    if (getAddonKind addon) == "plugin" then packages else null;
+  getLuaCfgs = { luaConfig, ... }: luaConfig;
 }

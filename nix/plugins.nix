@@ -5,27 +5,7 @@ let
     package = v;
   }) pkgs.vimPlugins.customThemes);
 in [
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.nvim-lspconfig;
-  }
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.plenary-nvim;
-  }
-
-  # inlay hints
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.lsp-inlayhints-nvim;
-    luaFiles = [ ../lua/config/plugins/plugin-config/lsp-inlayhints-nvim.lua ];
-  }
-
-  # neovim for lsp
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.neodev-nvim;
-  }
+  
 
   # test runner
   {
@@ -60,43 +40,6 @@ in [
   }
 
   # completion
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.cmp-buffer;
-  }
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.cmp-path;
-  }
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.cmp-cmdline;
-  }
-  # completion sources
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.cmp-nvim-lsp;
-  }
-  #cmp-nvim-lua
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.cmp_luasnip;
-  }
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.nvim-cmp;
-    luaFiles = [ ../lua/config/plugins/extra-config/autocompletion.lua ];
-  }
-  #cmp-pluginNames
-  # snippets
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.luasnip;
-  }
-  {
-    kind = "plugin";
-    package = pkgs.vimPlugins.friendly-snippets;
-  }
 
   # telescope
   {
