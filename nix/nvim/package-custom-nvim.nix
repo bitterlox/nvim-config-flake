@@ -1,13 +1,15 @@
-{ pkgs, configurations }:
+# configurations means addons for now
+{ pkgs, configurations  }:
 let
+  addon = import ../configurations/addons/addon.nix { inherit pkgs; };
   # there's an abstraction lurking here... when it works do it
-  plugins = builtins.filter (e: e != null)
-    (builtins.map (cfg: cfg.vimPlugin) configurations);
-  tools = builtins.filter (e: e != null)
-    (builtins.map (cfg: cfg.addToPath) configurations);
-  luaFiles = builtins.map (pkg: "luafile ${pkg}")
+  plugins = pkgs.lib.lists.flatten (builtins.filter (e: e != null)
+    (builtins.map addon.getPlugins configurations));
+  tools = pkgs.lib.lists.flatten (builtins.filter (e: e != null)
+    (builtins.map addon.getTools configurations));
+  luaFiles = builtins.map (pkg: "luafile ${pkg}") pkgs.lib.lists.flatten
     (builtins.filter (e: e != null)
-      (builtins.map (cfg: cfg.luaConfig) configurations));
+      (builtins.map addon.getLuaCfgs configurations));
 in pkgs.stdenv.mkDerivation { # add stuff to its paths
   name = "wrapped-nvim";
   # remove use of "with"

@@ -15,10 +15,9 @@
       #      - for tools just call the newToolConfig constructor on the pkg
       #      - for plugins call the constructor and optionally merge with a config if present
       #    into a list of Configurations then we use the result of that to call package-custom-nvim
-      customized-nvim = import ./nvim/custom-nvim.nix {
+      customized-nvim = import ./nvim/package-custom-nvim.nix {
         inherit pkgs;
-        inherit (builtins.elemAt config.neovim.editors 0)
-          includeInPath plugins pathsToLua;
+        configurations = (builtins.elemAt config.neovim.editors 0).addons;
       };
     in {
       config = {
