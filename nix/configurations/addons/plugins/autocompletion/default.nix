@@ -10,7 +10,6 @@ in addon.makePluginAddon {
     #cmp-nvim-lua
     pkgs.vimPlugins.cmp_luasnip
     pkgs.vimPlugins.nvim-cmp
-    #cmp-pluginNames
     # snippets
     pkgs.vimPlugins.luasnip
     pkgs.vimPlugins.friendly-snippets

@@ -1,4 +1,6 @@
 { pkgs }:
+# might want to move tools under own subdir and provide here
+# lsps bundled w/ respective tools 
 let
   addon = import ../addon.nix;
   lspsFn = import ./lsps;
