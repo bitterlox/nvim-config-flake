@@ -16,8 +16,8 @@ let
   lib = pkgs.lib;
   checkPkgOrPkgs = pkg:
     let
-      doChecks = lib.lists.foldl lib.trivial.and true;
-      flattened = lib.lists.flatten pkg;
+      doChecks = lib.lists.foldl' lib.trivial.and true;
+      flattened = (lib.lists.flatten pkg);
     in if (doChecks (builtins.map lib.attrsets.isDerivation flattened)) then
       flattened
     else
@@ -26,8 +26,8 @@ let
 
   checkCfgs = pathOrPaths:
     let
-      doChecks = lib.lists.foldl lib.trivial.and true;
-      flattened = (lib.lists.flatten pathOrPaths);
+      doChecks = lib.lists.foldl' lib.trivial.and true;
+      flattened = lib.lists.flatten pathOrPaths;
     in if (doChecks (builtins.map lib.path.hasStorePathPrefix flattened)) then
       flattened
     else
@@ -63,13 +63,21 @@ let
       };
   };
 
-  selectors = let getAddonKind = { kind, ... }: kind;
+  selectors = let
+    getAddonKind = addon:
+      if (builtins.isAttrs addon) then
+        (if (addon ? kind) then
+          addon.kind
+        else
+          lib.trivial.throwIf true "attrSet '${builtins.toString addon}' doesn't have a 'kind' attribute")
+      else
+        lib.trivial.throwIf true "argument '${builtins.toString addon}' is not attribute set";
   in {
     getTools = addon@{ packages, ... }:
       if (getAddonKind addon) == "tool" then packages else null;
     getPlugins = addon@{ packages, ... }:
-      if (getAddonKind addon) == "plugin" then packages else null;
-    getLuaCfgs = { luaConfigs, ... }: luaConfigs;
+      if (getAddonKind addon) == "plugin" then addon.packages else null;
+    getLuaCfgs = addon: lib.debug.traceSeqN 2 addon addon.luaConfigs;
     inherit getAddonKind;
   };
 

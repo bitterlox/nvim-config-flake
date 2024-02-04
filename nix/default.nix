@@ -1,5 +1,5 @@
 # this is a flake-parts module
-{ ... }: {
+{ lib, ... }: {
   imports = [ ./packages ./configurations ];
   perSystem = { inputs', config, system, pkgs, ... }:
     let
@@ -15,17 +15,29 @@
       #      - for tools just call the newToolConfig constructor on the pkg
       #      - for plugins call the constructor and optionally merge with a config if present
       #    into a list of Configurations then we use the result of that to call package-custom-nvim
+      addons = (builtins.elemAt config.neovim.editors 0).addons;
       customized-nvim = import ./nvim/package-custom-nvim.nix {
         inherit pkgs;
-        configurations = (builtins.elemAt config.neovim.editors 0).addons;
+        configurations = addons;
       };
     in {
       config = {
-        packages.default = customized-nvim;
-        apps.default = {
-          type = "app";
-          program = "${customized-nvim}/bin/nvim";
-        };
+        #packages.default = customized-nvim;
+        apps = builtins.listToAttrs (builtins.map (e:
+          let
+            nvim-pkg = import ./nvim/package-custom-nvim.nix {
+              inherit pkgs;
+              configurations = e.addons;
+            };
+          in lib.attrsets.nameValuePair "nvim-${e.name}" {
+            type = "app";
+            program = "${nvim-pkg}/bin/nvim";
+          }) config.neovim.editors);
+        # put back default thing
+        # apps.default = {
+        #   type = lib.debug.traceSeqN 2 addons "app";
+        #   program = "${customized-nvim}/bin/nvim";
+        # };
       };
     };
   systems = [ "aarch64-darwin" "x86_64-linux" ];

@@ -26,7 +26,7 @@
     in {
       config.neovim.editors = [{
         name = "full";
-        addons = lib.debug.traceSeqN 2 (builtins.elemAt addons 3) addons;
+        addons =  addons;
       }];
     };
   systems = [ "aarch64-darwin" "x86_64-linux" ];
