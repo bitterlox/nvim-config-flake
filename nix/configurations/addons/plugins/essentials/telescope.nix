@@ -1,6 +1,5 @@
-{ pkgs }:
-let addon = import ../addon.nix;
-in addon.makePluginAddon {
+{ pkgs, addon }:
+addon.makePluginAddon {
   pkg = [ pkgs.vimPlugins.telescope-nvim ];
   config = [
     ../lua/config/plugins/plugin-config/telescope-nvim.lua

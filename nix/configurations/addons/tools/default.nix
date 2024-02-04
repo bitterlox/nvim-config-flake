@@ -1,12 +1,10 @@
-{ pkgs }:
+{ pkgs, addon }:
 # might want to move tools under own subdir and provide here
 # lsps bundled w/ respective tools 
-let
-  addon = import ../addon.nix;
-  lspsFn = import ./lsps;
+let lsps = import ./lsps { inherit pkgs addon; };
 in {
   # lsps
-  lsps = lspsFn pkgs;
+  inherit lsps;
 
   # linters
   yamllint = addon.makeToolAddon { pkg = pkgs.yamllint; };

@@ -1,6 +1,5 @@
-{ pkgs }:
-let addon = import ../addon.nix;
-in addon.makePluginAddon {
+{ pkgs, addon }:
+addon.makePluginAddon {
   pkg = [
     pkgs.vimPlugins.neotest
     pkgs.vimPlugins.neotest-go

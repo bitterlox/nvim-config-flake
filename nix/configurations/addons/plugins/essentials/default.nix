@@ -1,13 +1,12 @@
-{ pkgs }:
+{ pkgs, addon }:
 let
-  addon = import ../addon.nix;
-  lsp-essentials = import ./lsps.nix { inherit pkgs; };
-  status-line = import ./status-line.nix { inherit pkgs; };
-  telescope = import ./telescope.nix { inherit pkgs; };
-  tmux = import ./tmux.nix { inherit pkgs; };
-  tpope = import ./tpope.nix { inherit pkgs; };
-  tree-sitter = import ./tree-sitter.nix { inherit pkgs; };
-  themes = import ./themes.nix { inherit pkgs; };
+  lsp-essentials = import ./lsp.nix { inherit pkgs addon; };
+  status-line = import ./status-line.nix { inherit pkgs addon; };
+  telescope = import ./telescope.nix { inherit pkgs addon; };
+  tmux = import ./tmux.nix { inherit pkgs addon; };
+  tpope = import ./tpope.nix { inherit pkgs addon; };
+  tree-sitter = import ./tree-sitter.nix { inherit pkgs addon; };
+  themes = import ./themes.nix { inherit pkgs addon; };
   visual-start-search =
     addon.makePluginAddon { pkg = pkgs.vimPlugins.vim-visual-star-search; };
   plenary = addon.makePluginAddon { pkg = pkgs.vimPlugins.plenary-nvim; };

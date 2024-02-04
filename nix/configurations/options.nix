@@ -3,9 +3,21 @@ let
   types = lib.types;
   addon-type = types.submodule {
     options = {
-      kind = types.enum [ "tool" "plugin" "config" ];
-      package = types.listOf types.package;
-      luaConfigs = types.listOf types.path;
+      kind = lib.mkOption {
+        type = types.enum [ "tool" "plugin" "config" ];
+        example = "tool";
+        description = "the type of addon";
+      };
+      packages = lib.mkOption {
+        type = types.listOf types.package;
+        example = [ ];
+        description = "a list of packages this addon contains";
+      };
+      luaConfigs = lib.mkOption {
+        type = types.listOf types.path;
+        example = [ ./foo.lua ];
+        description = "a list of paths to lua file with configuration for nvim";
+      };
     };
   };
   editor-type = types.submodule {
@@ -34,7 +46,7 @@ in {
       type = types.nonEmptyListOf editor-type;
       #example = lib.literalMD "[{}]";
       description = lib.mdDoc ''
-        A list of editor addons.
+        A list of editor configurations.
       '';
     };
   };

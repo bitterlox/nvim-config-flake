@@ -1,6 +1,5 @@
-{ pkgs }:
-let addon = import ../addon.nix;
-in addon.makePluginAddon {
+{ pkgs, addon }:
+addon.makePluginAddon {
   pkg = [
     # git client
     pkgs.vimPlugins.vim-fugitive
