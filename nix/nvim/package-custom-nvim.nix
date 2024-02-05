@@ -21,8 +21,8 @@ in pkgs.stdenv.mkDerivation { # add stuff to its paths
   src = with pkgs;
     wrapNeovim neovim-unwrapped {
       configure = {
-        customRC =  "";
-        packages = { all.start = plugins; };
+        customRC = builtins.concatStringsSep "\n" luaFiles;
+        packages = { all.start = [ ]; };
       };
     };
   nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
