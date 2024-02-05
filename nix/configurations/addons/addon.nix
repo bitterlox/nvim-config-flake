@@ -17,7 +17,8 @@ let
   checkPkgOrPkgs = pkg:
     let
       doChecks = lib.lists.foldl' lib.trivial.and true;
-      flattened = (lib.lists.flatten pkg);
+      # check the source for foldl', i think that's the problem somehow 
+      flattened = if (builtins.isList pkg) then pkg else [ pkg ];
     in if (doChecks (builtins.map lib.attrsets.isDerivation flattened)) then
       flattened
     else
@@ -69,15 +70,18 @@ let
         (if (addon ? kind) then
           addon.kind
         else
-          lib.trivial.throwIf true "attrSet '${builtins.toString addon}' doesn't have a 'kind' attribute")
+          lib.trivial.throwIf true "attrSet '${
+            builtins.toString addon
+          }' doesn't have a 'kind' attribute")
       else
-        lib.trivial.throwIf true "argument '${builtins.toString addon}' is not attribute set";
+        lib.trivial.throwIf true
+        "argument '${builtins.toString addon}' is not attribute set";
   in {
     getTools = addon@{ packages, ... }:
       if (getAddonKind addon) == "tool" then packages else null;
     getPlugins = addon@{ packages, ... }:
       if (getAddonKind addon) == "plugin" then addon.packages else null;
-    getLuaCfgs = addon: lib.debug.traceSeqN 2 addon addon.luaConfigs;
+    getLuaCfgs = addon: addon.luaConfigs;
     inherit getAddonKind;
   };
 

@@ -25,10 +25,12 @@
         #packages.default = customized-nvim;
         apps = builtins.listToAttrs (builtins.map (e:
           let
-            nvim-pkg = import ./nvim/package-custom-nvim.nix {
-              inherit pkgs;
-              configurations = e.addons;
-            };
+            nvim-pkg =
+              builtins.trace (builtins.trace "tracee!" e.addons)
+              (import ./nvim/package-custom-nvim.nix {
+                inherit pkgs;
+                configurations = e.addons;
+              });
           in lib.attrsets.nameValuePair "nvim-${e.name}" {
             type = "app";
             program = "${nvim-pkg}/bin/nvim";
