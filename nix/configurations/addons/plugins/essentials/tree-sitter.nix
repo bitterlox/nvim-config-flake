@@ -5,5 +5,5 @@ addon.makePluginAddon {
     pkgs.vimPlugins.nvim-lspconfig
     pkgs.vimPlugins.lsp-inlayhints-nvim
   ];
-  config = [ ../lua/config/plugins/plugin-config/lsp-inlayhints-nvim.lua ];
+  config = [ ../../../../../lua/config/plugins/plugin-config/lsp-inlayhints-nvim.lua ];
 }

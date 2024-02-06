@@ -8,5 +8,5 @@ addon.makePluginAddon {
     # of our "data" that can hold both plugins and tools
     pkgs.vimPlugins.customPlugins.efmls-configs
   ];
-  config = [ ../lua/config/plugins/plugin-config/lsp-inlayhints-nvim.lua ];
+  config = [ ../../../../../lua/config/plugins/plugin-config/lsp-inlayhints-nvim.lua ];
 }

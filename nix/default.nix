@@ -25,8 +25,8 @@
         #packages.default = customized-nvim;
         apps = builtins.listToAttrs (builtins.map (e:
           let
-            nvim-pkg =
-              builtins.trace (builtins.trace "tracee!" e.addons)
+            nvim-pkg = lib.debug.traceSeq
+              (map (e: (builtins.toString e.luaConfigs)) e.addons)
               (import ./nvim/package-custom-nvim.nix {
                 inherit pkgs;
                 configurations = e.addons;

@@ -20,7 +20,7 @@ addon.makePluginAddon {
     pkgs.vimPlugins.undotree
   ];
   config = [
-    ../lua/config/plugins/plugin-config/nvim-treesitter.lua
-    ../lua/config/plugins/plugin-keybindings/undotree.lua
+    ../../../../../lua/config/plugins/plugin-config/nvim-treesitter.lua
+    ../../../../../lua/config/plugins/plugin-keybindings/undotree.lua
   ];
 }

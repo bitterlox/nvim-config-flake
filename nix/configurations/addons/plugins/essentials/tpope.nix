@@ -12,5 +12,5 @@ addon.makePluginAddon {
     # comment stuff
     pkgs.vimPlugins.vim-commentary
   ];
-  config = [ ../lua/config/plugins/plugin-keybindings/vim-fugitive.lua ];
+  config = [ ../../../../../lua/config/plugins/plugin-keybindings/vim-fugitive.lua ];
 }
