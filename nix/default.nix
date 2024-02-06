@@ -1,44 +1,22 @@
 # this is a flake-parts module
 { lib, ... }: {
   imports = [ ./packages ./configurations ];
-  perSystem = { inputs', config, system, pkgs, ... }:
-    let
-      # 1. plugins specify path to a lua file (or files) to include
-      #   we can do away with all that code to match lua file names to plugin names
-      #   if this work then split the lua top level folder into two sub-folders
-      #   "autoloaded" "manual", remove "name" field from plugins
-      # 2. make another nix file (in this dir) that normalizes the stuff we get from `config.neovim`
-      #      should be pretty easy:
-      #      - for plain lua config just grab all the lua files in the folder and call
-      #        constructor on each (i can't understand when these files are put in the nix store);
-      #        (they are put in the store when we pass "pathsToLua" to the module config)
-      #      - for tools just call the newToolConfig constructor on the pkg
-      #      - for plugins call the constructor and optionally merge with a config if present
-      #    into a list of Configurations then we use the result of that to call package-custom-nvim
-      addons = (builtins.elemAt config.neovim.editors 0).addons;
-      customized-nvim = import ./nvim/package-custom-nvim.nix {
-        inherit pkgs;
-        configurations = addons;
-      };
-    in {
-      config = {
-        #packages.default = customized-nvim;
-        apps = builtins.listToAttrs (builtins.map (e:
+  perSystem = { inputs', config, system, pkgs, ... }: {
+    config = {
+      #packages.default = customized-nvim;
+      apps = let
+        attrs = builtins.listToAttrs (builtins.map (e:
           let
             nvim-pkg = import ./nvim/package-custom-nvim.nix {
               inherit pkgs;
-              configurations = e.addons;
+              inherit (e) name addons;
             };
           in lib.attrsets.nameValuePair "nvim-${e.name}" {
             type = "app";
             program = "${nvim-pkg}/bin/nvim";
           }) config.neovim.editors);
-        # put back default thing
-        # apps.default = {
-        #   type = lib.debug.traceSeqN 2 addons "app";
-        #   program = "${customized-nvim}/bin/nvim";
-        # };
-      };
+      in attrs // { default = attrs.nvim-full; };
     };
+  };
   systems = [ "aarch64-darwin" "x86_64-linux" ];
 }

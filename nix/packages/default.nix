@@ -1,3 +1,4 @@
+# todo: maybe move this to inside addons
 # this is a flake-parts module
 { inputs, lib, ... }:
 let

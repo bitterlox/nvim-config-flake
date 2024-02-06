@@ -1,15 +1,6 @@
-# in the future i could extend this to be able to merge addons together
-# simply make package be a list of packages, and we can enable merging
-# by merging the lists of packages and the lists of configs (provided the kind
-# is the same)
-# this could enable cool things like, nvim-cmp requries like 20 diff plugins
-# we can merge them all inside a single addons for ease of use, while still
-# being open to defining two tools singularly (eg bash_ls and shellcheck)
-# buy also providing a merged addons (which we'll most likely use all the time)
-# would need to be able to type check the "pkgs" in the argset to make sure it contains
-# at least one package, or just allow merging through the appropriate mergefn
-# and not through the constructor
-
+# todo:
+# - figure out how testing is done in nix
+# - add tests for this
 { pkgs }: # if we pass flake-part's top-level arg lib this doesn't work wtf???
 let
   # todo: pull out functionality under single fn
@@ -17,7 +8,6 @@ let
   checkPkgOrPkgs = pkg:
     let
       doChecks = lib.lists.foldl' lib.trivial.and true;
-      # check the source for foldl', i think that's the problem somehow 
       flattened = pkgs.lib.lists.flatten pkg;
     in if (doChecks (builtins.map lib.attrsets.isDerivation flattened)) then
       flattened
@@ -35,36 +25,34 @@ let
       lib.trivial.throwIf true
       "cfgs is not store path nor a list of store paths";
 
-  constructors =
-    let normalizeArg = arg: if (builtins.isList arg) then arg else [ arg ];
-    in {
-      makeToolAddon = { pkg, config ? [ ] }:
-        let
-          pkgs = checkPkgOrPkgs pkg;
-          cfgs = checkCfgs config;
-        in {
-          kind = "tool";
-          packages = pkgs;
-          luaConfigs = cfgs;
-        };
-      makePluginAddon = { pkg, config ? [ ] }:
-        let
-          pkgs = checkPkgOrPkgs pkg;
-          cfgs = checkCfgs config;
-        in {
-          kind = "plugin";
-          packages = pkgs;
-          luaConfigs = cfgs;
-        };
-      makeLuaCfgAddon = { config }:
-        let cfgs = checkCfgs config;
-        in {
-          kind = "config";
-          packages = [ ]; # not sure if this fits in our system
-          # this should fail if something that's not a list is passed
-          luaConfigs = cfgs;
-        };
-    };
+  constructors = {
+    makeToolAddon = { pkg, config ? [ ] }:
+      let
+        pkgs = checkPkgOrPkgs pkg;
+        cfgs = checkCfgs config;
+      in {
+        kind = "tool";
+        packages = pkgs;
+        luaConfigs = cfgs;
+      };
+    makePluginAddon = { pkg, config ? [ ] }:
+      let
+        pkgs = checkPkgOrPkgs pkg;
+        cfgs = checkCfgs config;
+      in {
+        kind = "plugin";
+        packages = pkgs;
+        luaConfigs = cfgs;
+      };
+    makeLuaCfgAddon = { config }:
+      let cfgs = checkCfgs config;
+      in {
+        kind = "config";
+        packages = [ ]; # not sure if this fits in our system
+        # this should fail if something that's not a list is passed
+        luaConfigs = cfgs;
+      };
+  };
 
   selectors = let
     getAddonKind = addon:
@@ -86,7 +74,7 @@ let
     getLuaCfgs = addon: addon.luaConfigs;
     inherit getAddonKind;
   };
-
+  # todo: make this better / prettier
   mergeAddons = addon1: addon2:
     let
       kind1 = (selectors.getAddonKind addon1);
