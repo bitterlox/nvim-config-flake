@@ -24,9 +24,9 @@
         tools.fd
       ] ++ builtins.attrValues tools.lsps;
     in {
-      config.neovim.editors = lib.debug.traceSeq (map (e: e.luaConfigs) addons)[{
+      config.neovim.editors = [{
         name = "full";
-        addons =  addons;
+        addons = addons;
       }];
     };
   systems = [ "aarch64-darwin" "x86_64-linux" ];

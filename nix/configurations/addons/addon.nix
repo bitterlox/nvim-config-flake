@@ -14,35 +14,34 @@
 let
   # todo: pull out functionality under single fn
   lib = pkgs.lib;
-  #checkPkgOrPkgs = pkg:
-  #  let
-  #    doChecks = lib.lists.foldl' lib.trivial.and true;
-  #    # check the source for foldl', i think that's the problem somehow 
-  #    flattened = if (builtins.isList pkg) then pkg else [ pkg ];
-  #  in if (doChecks (builtins.map lib.attrsets.isDerivation flattened)) then
-  #    flattened
-  #  else
-  #    lib.trivial.throwIf true
-  #    "pkg is not derivation nor a list of derivations";
+  checkPkgOrPkgs = pkg:
+    let
+      doChecks = lib.lists.foldl' lib.trivial.and true;
+      # check the source for foldl', i think that's the problem somehow 
+      flattened = pkgs.lib.lists.flatten pkg;
+    in if (doChecks (builtins.map lib.attrsets.isDerivation flattened)) then
+      flattened
+    else
+      lib.trivial.throwIf true
+      "pkg is not derivation nor a list of derivations";
 
-  #checkCfgs = pathOrPaths:
-  #  let
-  #    doChecks = lib.lists.foldl' lib.trivial.and true;
-  #    flattened =
-  #      if (builtins.isList pathOrPaths) then pathOrPaths else [ pathOrPaths ];
-  #  in if (doChecks (builtins.map lib.path.hasStorePathPrefix flattened)) then
-  #    flattened
-  #  else
-  #    lib.trivial.throwIf true
-  #    "cfgs is not store path nor a list of store paths";
+  checkCfgs = pathOrPaths:
+    let
+      doChecks = lib.lists.foldl' lib.trivial.and true;
+      flattened = pkgs.lib.lists.flatten pathOrPaths;
+    in if (doChecks (builtins.map lib.path.hasStorePathPrefix flattened)) then
+      flattened
+    else
+      lib.trivial.throwIf true
+      "cfgs is not store path nor a list of store paths";
 
   constructors =
     let normalizeArg = arg: if (builtins.isList arg) then arg else [ arg ];
     in {
       makeToolAddon = { pkg, config ? [ ] }:
         let
-          pkgs = normalizeArg pkg;
-          cfgs = normalizeArg config;
+          pkgs = checkPkgOrPkgs pkg;
+          cfgs = checkCfgs config;
         in {
           kind = "tool";
           packages = pkgs;
@@ -50,15 +49,15 @@ let
         };
       makePluginAddon = { pkg, config ? [ ] }:
         let
-          pkgs = normalizeArg pkg;
-          cfgs = normalizeArg config;
+          pkgs = checkPkgOrPkgs pkg;
+          cfgs = checkCfgs config;
         in {
           kind = "plugin";
           packages = pkgs;
           luaConfigs = cfgs;
         };
       makeLuaCfgAddon = { config }:
-        let cfgs = normalizeArg config;
+        let cfgs = checkCfgs config;
         in {
           kind = "config";
           packages = [ ]; # not sure if this fits in our system
@@ -83,20 +82,11 @@ let
     getTools = addon@{ packages, ... }:
       if (getAddonKind addon) == "tool" then packages else null;
     getPlugins = addon@{ packages, ... }:
-      if (getAddonKind addon) == "plugin" then
-        (builtins.trace
-          (builtins.trace "getPlugins" (pkgs.lib.debug.traceValSeqN 1 addon))
-          addon.packages)
-      else
-        null;
-    getLuaCfgs = addon:
-      builtins.trace
-      (builtins.trace "getLuaCfgs" (pkgs.lib.debug.traceValSeqN 1 addon))
-      addon.luaConfigs;
+      if (getAddonKind addon) == "plugin" then addon.packages else null;
+    getLuaCfgs = addon: addon.luaConfigs;
     inherit getAddonKind;
   };
 
-  # TODO: make merge function, update constructors
   mergeAddons = addon1: addon2:
     let
       kind1 = (selectors.getAddonKind addon1);
@@ -122,7 +112,6 @@ let
       };
     in if (kind1 == kind2) then
       let
-        # PROBLEM IS HERE
         pkgs = builtins.map selectorSet.${kind1} [ addon1 addon2 ];
         cfgs = builtins.map selectors.getLuaCfgs [ addon1 addon2 ];
       in constructorsSet.${kind1} cfgs pkgs
