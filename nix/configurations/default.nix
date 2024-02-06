@@ -8,7 +8,13 @@
       }; # if we pass flake-part's top-level arg lib this doesn't work wtf???
       tools = import ./addons/tools { inherit pkgs addon; };
       plugins = import ./addons/plugins { inherit pkgs addon; };
-      addons = [ plugins.completion plugins.essentials ] ++ [
+      config = import ./addons/config { inherit pkgs addon; };
+      addons = [
+        config.editor-config
+        config.globals
+        plugins.completion
+        plugins.essentials
+      ] ++ [
         # linters
         tools.yamllint
         tools.jsonlint
