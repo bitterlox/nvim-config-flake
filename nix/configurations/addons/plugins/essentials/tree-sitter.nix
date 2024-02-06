@@ -1,9 +1,25 @@
 { pkgs, addon }:
 addon.makePluginAddon {
   pkg = [
-    pkgs.vimPlugins.neodev-nvim
-    pkgs.vimPlugins.nvim-lspconfig
-    pkgs.vimPlugins.lsp-inlayhints-nvim
+    (pkgs.vimPlugins.nvim-treesitter.withPlugins (p: [
+      p.vimdoc
+      p.vim
+      p.go
+      p.c
+      p.lua
+      p.rust
+      p.typescript
+      p.javascript
+      p.bash
+      p.html
+      p.css
+      p.bash
+      p.scheme
+    ]))
+    pkgs.vimPlugins.undotree
   ];
-  config = [ ../../../../../lua/config/plugins/plugin-config/lsp-inlayhints-nvim.lua ];
+  config = [
+    ../../../../../lua/config/plugins/plugin-config/nvim-treesitter.lua
+    ../../../../../lua/config/plugins/plugin-keybindings/undotree.lua
+  ];
 }
