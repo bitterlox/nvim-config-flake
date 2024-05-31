@@ -15,6 +15,7 @@ addon.makePluginAddon {
       p.css
       p.bash
       p.scheme
+      p.yuck
     ]))
     pkgs.vimPlugins.undotree
   ];
