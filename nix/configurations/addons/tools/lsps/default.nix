@@ -14,7 +14,7 @@
   efm-langserver = addon.makeToolAddon {
     pkg = pkgs.efm-langserver;
     config =
-      [ ../../../../../lua/config/plugins/extra-config/efm_langsever.lua ];
+      [ ../../../../../lua/config/plugins/extra-config/efm_langserver.lua ];
   };
   nil = addon.makeToolAddon {
     pkg = pkgs.nil;

@@ -29,6 +29,7 @@
             tools.lsps.nil
             tools.lsps.bash-language-server
             tools.lsps.typescript-language-server
+            tools.lsps.efm-langserver
 
             # linters
             tools.yamllint
