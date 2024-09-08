@@ -1,4 +1,8 @@
 
+## This code has been merged into my main nixos.config repo
+
+---
+
 # config files
 
   we have three ways of adding lua config files:
